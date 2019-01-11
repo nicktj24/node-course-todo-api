@@ -5,7 +5,7 @@ var ObjId = new ObjectID();
 console.log(ObjId);
 
 
-MongoClient.connect('mongodb://localhost:27017/TodoApp',{ useNewUrlParser: true }, (err, client) => {
+MongoClient.connect('mongodb://localhost:27017/TodoApp1',{ useNewUrlParser: true }, (err, client) => {
   if(err){
     // Return function from here to avoid execute statements outside the function
     return console.log('Unable to connect to MongoDB server', err);
@@ -34,6 +34,9 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp',{ useNewUrlParser: true 
   //   }
   //   console.log(JSON.stringify(result.ops, undefined,2));
   // });
+  db.collection('Todos').insertOne({text:'Eat Lunch at 2pm', completed:false}).then((result) => {
+    console.log(result.ops);
+  });
 
   client.close();
 });

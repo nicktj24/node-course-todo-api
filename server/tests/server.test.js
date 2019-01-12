@@ -5,10 +5,15 @@ var {mongoose} = require('./../db/mongoose'); //Reference to db/mongoose.js's ex
 var {Todo} = require('./../models/todo'); // Reference to models/todo.js
 var {app} = require('./../server') // Reference to server/server.js's "app" variable
 
+var todos = [
+  {text:'Go to Gym'},
+  {text:'Go to Running'}
+]
+
 beforeEach((done) => {
   Todo.deleteMany({}).then(() => {
-    done();
-  });
+    return Todo.insertMany(todos);
+  }).then(() => { done() });
 });
 
 describe('POST /todos', () => {
@@ -26,7 +31,7 @@ describe('POST /todos', () => {
       if(err){
         return done(err);
       }
-      Todo.find().then((todos) => {
+      Todo.find({text}).then((todos) => {
         expect(todos.length).toBe(1);
         expect(todos[0].text).toBe(text);
         done();
@@ -46,7 +51,7 @@ it('Should not create todo with invalid body',(done) => {
       return done(err);
     }
     Todo.find().then((todos) => {
-      expect(todos.length).toBe(0);
+      expect(todos.length).toBe(2);
       done();
     }).catch((e) => {
       done(e);
@@ -54,4 +59,17 @@ it('Should not create todo with invalid body',(done) => {
   });
 });
 
+});
+
+describe('GET /todos', () => {
+  it('Should get all todos', (done) => {
+    request(app)
+    .get('/todos')
+    .expect(200)
+    .expect((res) => {
+      expect(res.body.todos.length).toBe(2);
+       expect()
+  })
+  .end(done);
+  });
 });

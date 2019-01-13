@@ -7,10 +7,17 @@ var {Todo} = require('./../models/todo'); // Reference to models/todo.js
 var {app} = require('./../server') // Reference to server/server.js's "app" variable
 
 var todos = [
-  { _id : new ObjectID(),
-    text:'Go to Gym'},
-  {text:'Go to Running'}
-]
+  {
+    _id : new ObjectID(),
+    text:'Go to Gym'
+  },
+  {
+    _id : new ObjectID(),
+    text:'Go to Running',
+    completed:true,
+    completedAt: 333
+  }
+];
 
 beforeEach((done) => {
   Todo.deleteMany({}).then(() => {
@@ -141,6 +148,47 @@ describe('DELETE /todos/:id', () => {
     request(app)
     .delete('/todos/121324')
     .expect(404)
+    .end(done);
+  });
+
+});
+
+describe('PATCH /todos/:id', () => {
+
+
+  it('should update the todo connected with given id', (done) => {
+    let body = {
+      text:'New todo to do',
+      completed:true
+    };
+
+    request(app)
+    .patch(`/todos/${todos[0]._id.toHexString()}`)
+    .send(body)
+    .expect(200)
+    .expect((res) => {
+      expect(res.body.todo.text).toBe(body.text);
+      expect(res.body.todo.completed).toBe(true);
+      expect(typeof res.body.todo.completedAt).toBe('number');
+    })
+    .end(done);
+  });
+
+  it('should clear completedAt when todo is not completed', (done) => {
+    let body = {
+      text:'New todo to do 11',
+      completed:false
+    };
+
+    request(app)
+    .patch(`/todos/${todos[1]._id.toHexString()}`)
+    .send(body)
+    .expect(200)
+    .expect((res) => {
+      expect(res.body.todo.text).toBe(body.text);
+      expect(res.body.todo.completed).toBe(false);
+      expect(res.body.todo.completedAt).toBeFalsy();
+    })
     .end(done);
   });
 

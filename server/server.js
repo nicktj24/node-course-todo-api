@@ -15,6 +15,33 @@ let PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
+// User Signup
+app.post('/users', (req, res) => {
+  var body = _.pick(req.body, ['email', 'password']);
+  var user = new User(body);
+
+  user.save().then(() => {
+    return user.generateAuthToken();
+  }).then((token) => {
+    res.header('x-auth', token).send(user);
+  }).catch((e) => {
+    res.status(400).send(e);
+  })
+});
+// app.post('/users', (req, res) => {
+//   var body = _.pick(req.body,['email','password']); // Returns Oject body ={email, password}
+//   var user = new User(body);
+//
+//   user.save().then(() => {
+//      return user.generateAuthToken();
+//   }).then((token) => {
+//     res.header('x-auth', token).send(user);
+//   }).catch((e) => {
+//     res.status(400).send(e);
+//   })
+//
+// });
+
 
 app.post('/todos', (req, res) => {
   var todo = new Todo({

@@ -9,6 +9,7 @@ const {ObjectID} = require('mongodb');
 const mongoose = require('./db/mongoose.js').mongoose;
 var Todo = require('./models/todo.js').Todo;
 var User = require('./models/users.js').Users;
+var {authenticate} = require('./middleware/authenticate');
 
 var app = express();
 let PORT = process.env.PORT || 3000;
@@ -40,6 +41,25 @@ app.post('/users', (req, res) => {
 //     res.status(400).send(e);
 //   })
 //
+// });
+
+
+app.get('/users/me', authenticate, (req, res) => {
+  res.send(req.user);
+}); //Or We can use below get method without middleware
+
+// app.get('/users/me', authenticate, (req, res) => {
+//   // we mention 'x-auth' value at the time of get request
+//   var token = req.header('x-auth');
+//   User.findByToken(token).then((user) => {
+//     if(!user){
+//       return Promise.reject();
+//     }
+//     res.send(user);
+//
+//   }).catch((e) => {
+//     res.status(401).send(e);
+//   });
 // });
 
 

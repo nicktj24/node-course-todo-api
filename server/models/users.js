@@ -40,7 +40,7 @@ userSchema.methods.toJSON = function(){
   // where only the properties available in the document exists
   var userObj = user.toObject();
 
-  return _.pick(userObj, ['_id','email']); 
+  return _.pick(userObj, ['_id','email']);
 }
 
 userSchema.methods.generateAuthToken = function () {
@@ -55,7 +55,28 @@ userSchema.methods.generateAuthToken = function () {
   });
 };
 
-var Users = mongoose.model('Users', userSchema)
+userSchema.statics.findByToken = function (token){
+  var User = this;
+  var decoded;
+  try {
+    decoded = jwt.verify(token, 'abc123');
+  } catch (e) {
+     // return new Promise((resolve, reject) => {
+     //   reject();
+     // }); //OR
+     return Promise.reject();
+  }
+
+ // Returning matching object with specified value
+  return User.findOne({
+    '_id':decoded._id,
+    'tokens.token':token,
+    'tokens.access':'auth'
+  });
+
+};
+
+var Users = mongoose.model('Users', userSchema);
 
 module.exports = {
   Users
